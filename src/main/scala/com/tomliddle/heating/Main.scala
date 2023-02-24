@@ -18,18 +18,19 @@ object Main extends IOApp.Simple:
   given logger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
   def runApp[F[_] : Async]: F[Nothing] = {
     for {
-      _ <- Logger[F].info("Start App") 
-      temperatureService = new TemperatureService[F] 
+      _ <- Logger[F].info("Start App")
+      temperatureService = new TemperatureServiceImpl[F]
       httpApp = (
         new HeatingRoutes[F](temperatureService).heatingRoutes <+>
           new HeatingRoutes[F](temperatureService).heatingRoutes
         ).orNotFound
-  
-      _ <-
+
+      e <-
         EmberServerBuilder.default[F]
           .withHost(ipv4"0.0.0.0")
           .withPort(port"8080")
           .withHttpApp(httpApp)
           .build
-    } yield ()
-  }.useForever
+          .useForever
+    } yield e
+  }

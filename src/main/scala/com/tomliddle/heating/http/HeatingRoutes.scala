@@ -8,12 +8,11 @@ import sttp.tapir.server.http4s.Http4sServerInterpreter
 class HeatingRoutes[F[_]: Async](temperatureService: TemperatureService[F]) {
 
   val heatingRoutes: HttpRoutes[F] =
-    heatingRoute  
-  
-  
+    heatingRoute
+
   val heatingRoute: HttpRoutes[F] =
-    Http4sServerInterpreter[F]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic(temperatureService.setTemp _))
+    Http4sServerInterpreter[F]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic(temperatureService.setTemp))
 
   val anotherRoute: HttpRoutes[F] =
-    Http4sServerInterpreter[F]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic(temperatureService.setTemp _))
+    Http4sServerInterpreter[F]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic(temperatureService.setTemp))
 }

@@ -1,5 +1,4 @@
 import sbt._
-import ServiceDependencies._
 
 lazy val root = (project in file("."))
   .settings(

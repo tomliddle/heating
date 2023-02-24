@@ -15,6 +15,7 @@ import org.http4s.syntax.literals.uri
 object DataTypes:
 
   case class Result(currentTemp: Double)
+  case class ResultError(message: String)
   final case class HeatDemand(temperature: Double)
   
  // def apply[F[_]](implicit ev: DataTypes[F]): DataTypes[F] = ev

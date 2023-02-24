@@ -1,7 +1,7 @@
 package com.tomliddle.heating.adt
 
-import com.tomliddle.heating.adt.DataTypes.Result
-import io.circe.Decoder
+import com.tomliddle.heating.adt.DataTypes.{Result, ResultError}
+import io.circe.Codec
 import sttp.tapir.*
 import sttp.tapir.json.circe.*
 import sttp.tapir.generic.auto.*
@@ -9,5 +9,8 @@ import io.circe.generic.semiauto.*
 
 object Codecs {
 
-  given resultCodec: Decoder[Result] = deriveDecoder
+  implicit val resultCodec: Codec[Result] = deriveCodec
+
+  implicit val resultError: Codec[ResultError] = deriveCodec
+  //implicit val resultEncoder: Encoder[Result] = deriveEncoder
 }

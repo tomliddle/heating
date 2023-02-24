@@ -1,17 +1,18 @@
 package com.tomliddle.heating.http
 
-import com.tomliddle.heating.TemperatureService.Result
+import com.tomliddle.heating.adt.DataTypes.{Result, ResultError}
 import sttp.tapir.{Endpoint, endpoint, stringToPath}
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.jsonBody
+import com.tomliddle.heating.adt.Codecs.*
 
 object HeatingApi:
 
   val baseEndpoint = endpoint
 
-  val setTemperatureEndpoint: Endpoint[Unit, Double, Unit, Result, Any] = baseEndpoint
+  val setTemperatureEndpoint: Endpoint[Unit, Double, ResultError, Result, Any] = baseEndpoint
     .get
     .in("temp" / "set" / path[Double])
-  .out(jsonBody[Result])
-    .errorOut()
+    .out(jsonBody[Result])
+    .errorOut(jsonBody[ResultError])

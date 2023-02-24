@@ -12,12 +12,12 @@ class HelloWorldSpec extends CatsEffectSuite:
     assertIO(setTemperature.map(_.status) ,Status.Ok)
   }
 
-  test("setTemperature returns hello world message") {
-    assertIO(setTemperature.flatMap(_.as[String]), "{\"message\":\"Hello, world\"}")
+  test("setTemperature returns current temp") {
+    assertIO(setTemperature.flatMap(_.as[String]), "{\"currentTemp\":14.5}")
   }
 
   private[this] val setTemperature: IO[Response[IO]] =
     val temperatureServiceStub = new TemperatureServiceStub()
     val routes = new HeatingRoutes[IO](temperatureServiceStub)
     val getRoot = Request[IO](Method.GET, uri"temp/set/19.0")
-    routes.heatingRoutes.orNotFound.run(getRoot)
+    routes.heatingRoute.orNotFound.run(getRoot)

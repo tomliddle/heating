@@ -11,8 +11,8 @@ object HeatingApi:
 
   val baseEndpoint = endpoint
 
-  val setTemperatureEndpoint: Endpoint[Unit, Double, ResultError, Result, Any] = baseEndpoint
+  val setTemperatureEndpoint: Endpoint[Unit, (Double, Double), ResultError, Result, Any] = baseEndpoint
     .get
-    .in("temp" / "set" / path[Double])
+    .in("temp" / "set" / path[Double] / path[Double])
     .out(jsonBody[Result])
     .errorOut(jsonBody[ResultError])

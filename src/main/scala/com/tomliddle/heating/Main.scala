@@ -19,12 +19,8 @@ object Main extends IOApp.Simple:
   def runApp[F[_] : Async]: F[Nothing] = {
     for {
       _ <- Logger[F].info("Start App")
-      temperatureService = new TemperatureServiceImpl[F]
-      httpApp = (
-        new HeatingRoutes[F](temperatureService).heatingRoutes <+>
-          new HeatingRoutes[F](temperatureService).heatingRoutes
-        ).orNotFound
-
+      temperatureService = new BoilerServiceImpl[F]
+      httpApp = new HeatingRoutes[F](temperatureService).heatingRoutes.orNotFound
       e <-
         EmberServerBuilder.default[F]
           .withHost(ipv4"0.0.0.0")

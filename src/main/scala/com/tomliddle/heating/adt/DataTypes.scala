@@ -1,22 +1,24 @@
 package com.tomliddle.heating.adt
 
-import cats.effect.Concurrent
-import cats.implicits.*
-import com.tomliddle.heating.adt.DataTypes
-import io.circe.{Decoder, Encoder}
-import org.http4s.*
-import org.http4s.Method.*
-import org.http4s.client.Client
-import org.http4s.client.dsl.Http4sClientDsl
-import org.http4s.implicits.uri
-import org.http4s.syntax.all.uri
-import org.http4s.syntax.literals.uri
 
-object DataTypes:
+object DataTypes {
 
+  
   case class Result(currentTemp: Double)
   case class ResultError(message: String)
-  final case class HeatDemand(temperature: Double)
+
+  sealed trait Event
+  final case class TempEvent(setTemp: Double, currentTemp: Double) extends Event {
+    val increaseNeeded = setTemp - currentTemp
+  }
+  case object Tick extends Event
+  
+  
+  trait Command
+  final case class TempCommand(waterTemperature: Option[Double]) extends Event
+
+
+  
   
  // def apply[F[_]](implicit ev: DataTypes[F]): DataTypes[F] = ev
   
@@ -27,4 +29,5 @@ object DataTypes:
     def get: F[DataTypes.HeatDemand] =
       C.expect[HeatDemand](GET(uri"https://icanhazdadjoke.com/"))
         .adaptError{ case t => JokeError(t)} // Prevent Client Json Decoding Failure Leaking
-*/
+  */
+}

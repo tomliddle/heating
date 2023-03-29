@@ -6,7 +6,7 @@ import org.http4s.*
 import org.http4s.implicits.*
 import munit.CatsEffectSuite
 
-class HelloWorldSpec extends CatsEffectSuite:
+class SetTempSpec extends CatsEffectSuite:
 
   test("setTemperature returns status code 200") {
     assertIO(setTemperature.map(_.status) ,Status.Ok)
@@ -17,7 +17,7 @@ class HelloWorldSpec extends CatsEffectSuite:
   }
 
   private[this] val setTemperature: IO[Response[IO]] =
-    val temperatureServiceStub = new TemperatureServiceStub()
+    val temperatureServiceStub = new BoilerServiceStub[IO]()
     val routes = new HeatingRoutes[IO](temperatureServiceStub)
-    val getRoot = Request[IO](Method.GET, uri"temp/set/19.0")
+    val getRoot = Request[IO](Method.GET, uri"temp/set/19.0/16.0")
     routes.heatingRoute.orNotFound.run(getRoot)

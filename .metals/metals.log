@@ -1,0 +1,133 @@
+2023.03.29 11:28:06 INFO  Started: Metals version 0.11.11 in workspace '/Users/tle17/projects/sandbox/heating' for client Visual Studio Code 1.76.2.
+SLF4J: No SLF4J providers were found.
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+SLF4J: Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.
+SLF4J: Ignoring binding found at [jar:file:/Users/tle17/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/com/outr/scribe-slf4j_2.13/3.11.0/scribe-slf4j_2.13-3.11.0.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.
+2023.03.29 11:28:07 INFO  time: initialize in 0.31s
+2023.03.29 11:28:08 WARN  Build server is not auto-connectable.
+2023.03.29 11:28:45 INFO  running '/opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home/bin/java -Djline.terminal=jline.UnsupportedTerminal -Dsbt.log.noformat=true -Dfile.encoding=UTF-8 -jar /var/folders/n0/80z0ml5s401fqx7093_zxhjh0000gp/T/metals15490792697828631563/sbt-launch.jar -Dbloop.export-jar-classifiers=sources bloopInstall'
+2023.03.29 11:28:46 WARN  no build target for: /Users/tle17/projects/sandbox/heating/project/metals.sbt
+2023.03.29 11:28:46 WARN  no build target for: /Users/tle17/projects/sandbox/heating/project/project/metals.sbt
+2023.03.29 11:28:46 INFO  skipping build import with status 'Started'
+2023.03.29 11:28:46 INFO  [info] welcome to sbt 1.8.2 (Homebrew Java 11.0.18)
+2023.03.29 11:28:46 INFO  [info] loading settings for project global-plugins from build.sbt ...
+2023.03.29 11:28:46 INFO  [info] loading global plugins from /Users/tle17/.sbt/1.0/plugins
+2023.03.29 11:28:48 INFO  [info] loading settings for project heating-build-build-build from metals.sbt ...
+2023.03.29 11:28:48 INFO  [info] loading project definition from /Users/tle17/projects/sandbox/heating/project/project/project
+2023.03.29 11:28:49 INFO  no build target found for /Users/tle17/projects/sandbox/heating/project/project/metals.sbt. Using presentation compiler with project's scala-library version: 3.2.2
+2023.03.29 11:28:50 INFO  [info] loading settings for project heating-build-build from metals.sbt ...
+2023.03.29 11:28:50 INFO  [info] loading project definition from /Users/tle17/projects/sandbox/heating/project/project
+2023.03.29 11:28:52 INFO  [success] Generated .bloop/heating-build-build.json
+2023.03.29 11:28:52 INFO  [success] Total time: 2 s, completed 29 Mar 2023, 11:28:52
+2023.03.29 11:28:52 INFO  [info] loading settings for project heating-build from metals.sbt,plugins.sbt ...
+2023.03.29 11:28:52 INFO  [info] loading project definition from /Users/tle17/projects/sandbox/heating/project
+2023.03.29 11:28:55 INFO  [success] Generated .bloop/heating-build.json
+2023.03.29 11:28:55 INFO  [info] compiling 1 Scala source to /Users/tle17/projects/sandbox/heating/project/target/scala-2.12/sbt-1.0/classes ...
+2023.03.29 11:28:57 INFO  [info] done compiling
+2023.03.29 11:28:57 INFO  [success] Total time: 5 s, completed 29 Mar 2023, 11:28:57
+2023.03.29 11:28:57 INFO  [info] loading settings for project root from build.sbt ...
+2023.03.29 11:28:57 INFO  [info] set current project to heating (in build file:/Users/tle17/projects/sandbox/heating/)
+2023.03.29 11:28:57 INFO  [success] Generated .bloop/root-test.json
+2023.03.29 11:28:57 INFO  [success] Generated .bloop/root.json
+2023.03.29 11:28:57 INFO  [success] Total time: 0 s, completed 29 Mar 2023, 11:28:58
+2023.03.29 11:28:58 INFO  time: ran 'sbt bloopInstall' in 12s
+2023.03.29 11:28:58 INFO  Attempting to connect to the build server...
+2023.03.29 11:28:58 INFO  Setting up current java home /opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home in /Users/tle17/.bloop/bloop.json
+2023.03.29 11:29:06 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /Users/tle17/projects/sandbox/heating/.metals/bsp.trace.json or /Users/tle17/Library/Caches/org.scalameta.metals/bsp.trace.json
+2023.03.29 11:29:06 INFO  Attempting to connect to the build server...
+2023.03.29 11:29:06 INFO  Bloop uses /opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home defined at /Users/tle17/.bloop/bloop.json
+2023.03.29 11:29:06 INFO  Attempting to connect to the build server...
+2023.03.29 11:29:06 INFO  Bloop uses /opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home defined at /Users/tle17/.bloop/bloop.json
+2023.03.29 11:29:06 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /Users/tle17/projects/sandbox/heating/project/.metals/bsp.trace.json or /Users/tle17/Library/Caches/org.scalameta.metals/bsp.trace.json
+2023.03.29 11:29:07 INFO  tracing is disabled for protocol BSP, to enable tracing of incoming and outgoing JSON messages create an empty file at /Users/tle17/projects/sandbox/heating/project/project/.metals/bsp.trace.json or /Users/tle17/Library/Caches/org.scalameta.metals/bsp.trace.json
+2023.03.29 11:29:09 INFO  time: Connected to build server in 10s
+2023.03.29 11:29:09 INFO  Connected to Build server: Bloop v1.5.6
+2023.03.29 11:29:13 INFO  time: indexed workspace in 4.47s
+2023.03.29 11:29:16 INFO  compiling root (7 scala sources)
+2023.03.29 11:29:20 INFO  time: compiled root in 4.09s
+Mar 29, 2023 11:29:26 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2023.03.29 11:29:34 INFO  compiling root (7 scala sources)
+2023.03.29 11:29:36 INFO  time: compiled root in 1.6s
+2023.03.29 11:29:49 INFO  compiling root (7 scala sources)
+2023.03.29 11:29:51 INFO  time: compiled root in 1.32s
+2023.03.29 11:29:55 INFO  compiling root (7 scala sources)
+2023.03.29 11:29:56 INFO  time: compiled root in 1.64s
+2023.03.29 11:30:42 WARN  Using indexes to guess the definition of Stream
+2023.03.29 11:30:42 WARN  Using indexes to guess the definition of syntax
+2023.03.29 11:30:58 INFO  compiling root (7 scala sources)
+2023.03.29 11:30:59 INFO  time: compiled root in 1.25s
+2023.03.29 11:45:23 WARN  Using indexes to guess the definition of TempCommand
+2023.03.29 11:45:23 INFO  compiling root (7 scala sources)
+2023.03.29 11:45:25 INFO  time: compiled root in 1.23s
+2023.03.29 11:45:49 INFO  compiling root (7 scala sources)
+2023.03.29 11:45:49 INFO  time: compiled root in 0.84s
+2023.03.29 11:46:31 WARN  Using indexes to guess the definition of TempCommand
+2023.03.29 11:46:31 INFO  compiling root (7 scala sources)
+2023.03.29 11:46:31 WARN  Using indexes to guess the definition of TempCommand
+2023.03.29 11:46:31 INFO  time: compiled root in 0.85s
+2023.03.29 11:46:31 INFO  compiling root (7 scala sources)
+2023.03.29 11:46:32 INFO  time: compiled root in 0.82s
+2023.03.29 11:46:49 INFO  compiling root (7 scala sources)
+2023.03.29 11:46:51 INFO  time: compiled root in 2.43s
+Mar 29, 2023 11:46:57 AM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+2023.03.29 11:56:31 INFO  compiling root (2 scala sources)
+2023.03.29 11:56:31 INFO  time: compiled root in 0.65s
+2023.03.29 11:58:15 INFO  compiling root (2 scala sources)
+2023.03.29 11:58:15 INFO  time: compiled root in 0.23s
+2023.03.29 11:58:21 INFO  compiling root (1 scala source)
+2023.03.29 11:58:21 INFO  time: compiled root in 0.13s
+2023.03.29 11:58:25 INFO  compiling root (1 scala source)
+2023.03.29 11:58:25 INFO  time: compiled root in 0.13s
+2023.03.29 11:58:30 INFO  compiling root (1 scala source)
+2023.03.29 11:58:30 INFO  time: compiled root in 0.13s
+2023.03.29 11:58:38 INFO  compiling root (1 scala source)
+2023.03.29 11:58:38 INFO  time: compiled root in 0.12s
+2023.03.29 11:58:47 INFO  compiling root (1 scala source)
+2023.03.29 11:58:47 INFO  time: compiled root in 0.12s
+2023.03.29 11:58:50 INFO  compiling root (1 scala source)
+2023.03.29 11:58:50 INFO  time: compiled root in 70ms
+2023.03.29 11:59:01 INFO  compiling root (1 scala source)
+2023.03.29 11:59:01 WARN  there were 2 deprecation warnings; re-run with -deprecation for details
+2023.03.29 11:59:01 INFO  time: compiled root in 0.18s
+2023.03.29 11:59:06 INFO  compiling root (1 scala source)
+2023.03.29 11:59:06 INFO  time: compiled root in 0.14s
+2023.03.29 11:59:07 INFO  compiling root (1 scala source)
+2023.03.29 11:59:07 INFO  time: compiled root in 70ms
+2023.03.29 11:59:12 INFO  compiling root (1 scala source)
+2023.03.29 11:59:12 INFO  time: compiled root in 0.14s
+2023.03.29 11:59:19 INFO  compiling root (1 scala source)
+2023.03.29 11:59:19 INFO  time: compiled root in 0.13s
+2023.03.29 11:59:21 INFO  compiling root (1 scala source)
+2023.03.29 11:59:21 INFO  time: compiled root in 0.11s
+2023.03.29 11:59:23 INFO  compiling root (1 scala source)
+2023.03.29 11:59:23 INFO  time: compiled root in 0.11s
+2023.03.29 11:59:30 INFO  compiling root (1 scala source)
+2023.03.29 11:59:30 INFO  time: compiled root in 36ms
+2023.03.29 11:59:32 INFO  compiling root (1 scala source)
+2023.03.29 11:59:32 INFO  time: compiled root in 0.14s
+2023.03.29 11:59:40 INFO  compiling root (1 scala source)
+2023.03.29 11:59:40 INFO  time: compiled root in 0.15s
+2023.03.29 11:59:41 INFO  compiling root (1 scala source)
+2023.03.29 11:59:41 INFO  time: compiled root in 0.16s
+2023.03.29 11:59:46 INFO  compiling root (1 scala source)
+2023.03.29 11:59:46 INFO  time: compiled root in 0.19s
+2023.03.29 12:00:01 INFO  compiling root (1 scala source)
+2023.03.29 12:00:01 INFO  time: compiled root in 0.13s
+2023.03.29 12:00:03 INFO  compiling root (1 scala source)
+2023.03.29 12:00:03 INFO  time: compiled root in 0.14s
+2023.03.29 12:00:05 INFO  compiling root (1 scala source)
+2023.03.29 12:00:05 INFO  time: compiled root in 69ms
+2023.03.29 12:00:09 INFO  compiling root (1 scala source)
+2023.03.29 12:00:09 INFO  time: compiled root in 0.12s
+2023.03.29 12:00:18 INFO  compiling root (1 scala source)
+2023.03.29 12:00:18 INFO  time: compiled root in 0.12s
+2023.03.29 12:00:26 INFO  compiling root (1 scala source)
+2023.03.29 12:00:26 INFO  time: compiled root in 0.56s
+2023.03.29 12:00:30 INFO  compiling root (1 scala source)
+2023.03.29 12:00:30 INFO  time: compiled root in 0.52s
+2023.03.29 12:00:33 INFO  compiling root (1 scala source)
+2023.03.29 12:00:33 INFO  time: compiled root in 72ms

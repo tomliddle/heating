@@ -1,19 +1,19 @@
 package com.tomliddle.heating
 
 import cats.effect.Async
-import com.tomliddle.heating.adt.DataTypes.{Result, ResultError}
-import cats._
-import cats.data._
-import cats.implicits._
+import com.tomliddle.heating.adt.DataTypes.{Result, ResultError, TempCommand}
+import cats.*
+import cats.data.*
+import cats.implicits.*
 
-trait TemperatureService[F[_]] {
+trait BoilerService[F[_]] {
 
-  def setTemp(temp: Double): F[Either[ResultError, Result]]
+  def setTemp(tempCommand: TempCommand): F[Either[ResultError, Result]]
 }
 
 
-class TemperatureServiceImpl[F[_]: Async] extends TemperatureService[F] {
-  override def setTemp(temp: Double): F[Either[ResultError, Result]] = {
+class BoilerServiceImpl[F[_]: Async] extends BoilerService[F] {
+  override def setTemp(tempCommand: TempCommand): F[Either[ResultError, Result]] = {
     Async[F].pure(Result(19.6).asRight)
   }
 }

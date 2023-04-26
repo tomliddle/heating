@@ -18,7 +18,7 @@ object HeatingApi {
     .errorOut(jsonBody[ResultError])
 
   val getTemperatureEndpoint: Endpoint[Unit, Unit, ResultError, Result, Any] = baseEndpoint
-    .put
+    .get
     .in("temp")
     .out(jsonBody[Result])
     .errorOut(jsonBody[ResultError])

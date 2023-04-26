@@ -1,5 +1,6 @@
 package com.tomliddle.heating.processor
 
+import cats.data.EitherT
 import cats.effect.{Concurrent, IO, Resource, Sync, Temporal}
 import com.tomliddle.heating.adt.DataTypes.*
 
@@ -18,7 +19,7 @@ import fs2.concurrent.Topic.Closed
 
 class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], topic: Topic[IO, Event]) extends Logging {
 
-  private val heatingSetFrequency: FiniteDuration = 5.minutes
+  private val heatingSetFrequency: FiniteDuration = 10.seconds
 
   def publish(t: TempCommand): IO[Either[Closed, Unit]] = {
     topic.publish1(t)
@@ -40,8 +41,12 @@ class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], to
     }
   }
 
-  private def processCommand(state: State): IO[Either[ResultError, Result]] =
-    boilerService.setTemp(process(state.recentTemps.head))
+  private def processCommand(state: State): IO[Either[ResultError, Result]] = (for {
+    t <- EitherT.fromOption(state.recentTemps.headOption, ResultError("No recent temp"))
+    res <- EitherT.apply(boilerService.setTemp(process(t)))
+  } yield res).value
+
+
 
   // TODO change this to its own service and within F context
   private def process(e: SetTemp): TempCommand = {

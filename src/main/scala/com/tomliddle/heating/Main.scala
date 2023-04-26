@@ -19,7 +19,7 @@ import org.http4s.ember.server.EmberServerBuilder
 object Main extends IOApp.Simple with Logging:
   val run = runApp
 
-  
+
   def runApp: IO[Nothing] = {
     for {
       _ <- logger.info("Start App")
@@ -27,20 +27,21 @@ object Main extends IOApp.Simple with Logging:
       topic <- fs2.concurrent.Topic[IO, Event]
       streamProcessor = new StreamProcessor(temperatureService, topic)
       httpApp = new HeatingRoutes(streamProcessor).heatingRoutes.orNotFound
-      _ <- streamProcessor.runStream.compile.drain.foreverM
-      e <-
+      stream = streamProcessor.runStream.compile.drain.background
+      server <-
         EmberServerBuilder.default[IO]
           .withHost(ipv4"0.0.0.0")
           .withPort(port"8080")
           .withHttpApp(httpApp)
           .build
+          .combineK(stream)
           .useForever
-    } yield e
+    } yield server
   }
-  
-  
+
+
   trait Logging {
     given logger: Logger[IO] = Slf4jLogger.getLogger[IO]
-    
-    
+
+
   }

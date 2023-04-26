@@ -19,7 +19,7 @@ class HeatingRoutes(streamProcessor: StreamProcessor) {
     })
 
   private val getTemperature: HttpRoutes[IO] =
-    Http4sServerInterpreter[IO]().toRoutes(HeatingApi.getTemperatureEndpoint.serverLogic { s =>
+    Http4sServerInterpreter[IO]().toRoutes(HeatingApi.getTemperatureEndpoint.serverLogic { _ =>
       IO.pure(Result(2.2).asRight[ResultError])
     })
 

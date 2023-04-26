@@ -1,14 +1,21 @@
 package com.tomliddle.heating.adt
 
+import scala.collection.immutable.Queue
+
 
 object DataTypes {
+
+
+  case class State(recentTemps: Queue[SetTemp] = Queue.empty) {
+    def withTemp(t: SetTemp): State = this.copy(recentTemps = recentTemps.takeRight(9).enqueue(t))
+  }
 
   
   case class Result(currentTemp: Double)
   case class ResultError(message: String)
 
   sealed trait Event
-  final case class TempEvent(setTemp: Double, currentTemp: Double) extends Event {
+  final case class SetTemp(setTemp: Double, currentTemp: Double) extends Event {
     val increaseNeeded = setTemp - currentTemp
   }
   case object Tick extends Event

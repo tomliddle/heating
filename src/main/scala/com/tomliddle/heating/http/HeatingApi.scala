@@ -7,12 +7,19 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.circe.jsonBody
 import com.tomliddle.heating.adt.Codecs.*
 
-object HeatingApi:
+object HeatingApi {
 
   val baseEndpoint = endpoint
 
   val setTemperatureEndpoint: Endpoint[Unit, (Double, Double), ResultError, Result, Any] = baseEndpoint
-    .get
-    .in("temp" / "set" / path[Double] / path[Double])
+    .put
+    .in("temp" / path[Double] / path[Double])
     .out(jsonBody[Result])
     .errorOut(jsonBody[ResultError])
+
+  val getTemperatureEndpoint: Endpoint[Unit, Unit, ResultError, Result, Any] = baseEndpoint
+    .put
+    .in("temp")
+    .out(jsonBody[Result])
+    .errorOut(jsonBody[ResultError])
+}

@@ -8,25 +8,39 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import cats.effect.*
 import cats.implicits.*
+import com.tomliddle.heating.Main.Logging
 import com.tomliddle.heating.adt.DataTypes
+import com.tomliddle.heating.adt.DataTypes.Event
 import com.tomliddle.heating.http.HeatingRoutes
+import com.tomliddle.heating.processor.StreamProcessor
+import fs2.concurrent.Topic
 import org.http4s.ember.server.EmberServerBuilder
 
-object Main extends IOApp.Simple:
-  val run = runApp[IO]
+object Main extends IOApp.Simple with Logging:
+  val run = runApp
 
-  given logger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLogger[F]
-  def runApp[F[_] : Async]: F[Nothing] = {
+  
+  def runApp: IO[Nothing] = {
     for {
-      _ <- Logger[F].info("Start App")
-      temperatureService = new BoilerServiceImpl[F]
-      httpApp = new HeatingRoutes[F](temperatureService).heatingRoutes.orNotFound
+      _ <- logger.info("Start App")
+      temperatureService = new BoilerServiceImpl[IO]
+      topic <- fs2.concurrent.Topic[IO, Event]
+      streamProcessor = new StreamProcessor(temperatureService, topic)
+      httpApp = new HeatingRoutes(streamProcessor).heatingRoutes.orNotFound
+      _ <- streamProcessor.runStream.compile.drain.foreverM
       e <-
-        EmberServerBuilder.default[F]
+        EmberServerBuilder.default[IO]
           .withHost(ipv4"0.0.0.0")
           .withPort(port"8080")
           .withHttpApp(httpApp)
           .build
           .useForever
     } yield e
+  }
+  
+  
+  trait Logging {
+    given logger: Logger[IO] = Slf4jLogger.getLogger[IO]
+    
+    
   }

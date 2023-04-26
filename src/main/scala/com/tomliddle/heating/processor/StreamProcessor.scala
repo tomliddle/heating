@@ -1,48 +1,50 @@
 package com.tomliddle.heating.processor
 
-import cats.effect.{Concurrent, IO, Sync, Temporal}
-import com.tomliddle.heating.adt.DataTypes.{TempEvent, *}
+import cats.effect.{Concurrent, IO, Resource, Sync, Temporal}
+import com.tomliddle.heating.adt.DataTypes.*
 
 import scala.util.Random
 import cats.syntax.option.catsSyntaxOptionId
 import com.tomliddle.heating.BoilerService
-import fs2.Pure
+import com.tomliddle.heating.Main.Logging
+import fs2.{Pipe, Pure}
 
 import java.time
 import java.time.Instant
 import scala.collection.immutable.Queue
 import scala.concurrent.duration.*
+import fs2.concurrent.Topic
+import fs2.concurrent.Topic.Closed
 
-case class State(recentTemps: Queue[TempEvent] = Queue.empty, lastCommandTime: time.Instant = Instant.now) {
-  def withTemp(t: TempEvent): State = this.copy(recentTemps = recentTemps.takeRight(9).enqueue(t))
-  def resetTime: State              = this.copy(lastCommandTime = Instant.now)
-}
+class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], topic: Topic[IO, Event]) extends Logging {
 
-class StreamProcessor[F[_]](boilerService: com.tomliddle.heating.BoilerService[F])(using F: Temporal[F]) {
+  private val heatingSetFrequency: FiniteDuration = 5.minutes
 
-  val heatingSetFrequency: time.Duration = java.time.Duration.ofMinutes(5)
+  def publish(t: TempCommand): IO[Either[Closed, Unit]] = {
+    topic.publish1(t)
+  }
 
-  def tempEvent: TempEvent = TempEvent(Random.between(10.0, 20.0), Random.between(10.0, 20.0))
-
-  def runStream = {
-    val stream: fs2.Stream[F, TempEvent]    = fs2.Stream.constant(tempEvent).covary[F].take(100)
+  def runStream: fs2.Stream[IO, State] = {
+    val stream: fs2.Stream[IO, Event] = topic.subscribeUnbounded
     val timerStream: fs2.Stream[Pure, Tick.type] = fs2.Stream(Tick)
 
-    val result: fs2.Stream[F, Event] = stream ++ timerStream
-    val events: fs2.Stream[F, Event] = result.mergeHaltL(fs2.Stream.awakeEvery[F](5.minutes).map(_ => Tick))
+    val result: fs2.Stream[IO, Event] = stream ++ timerStream
+    val events: fs2.Stream[IO, Event] = result.mergeHaltL(fs2.Stream.awakeEvery[IO](heatingSetFrequency).map(_ => Tick))
 
-    events.evalScan(State()) {
+    events
+      .evalTap(f => logger.info(s"processing ${f}"))
+      .evalScan(State()) {
       case (state, Tick) =>
-        F.flatMap(doCommand(state))(_ => F.pure(state))
-      case (state, t: TempEvent) => F.pure(state.withTemp(t))
+        processCommand(state).flatMap(_ => IO.pure(state))
+      case (state, t: SetTemp) => IO.pure(state.withTemp(t))
     }
   }
 
-  def doCommand(state: State): F[Either[ResultError, Result]] =
+  private def processCommand(state: State): IO[Either[ResultError, Result]] =
     boilerService.setTemp(process(state.recentTemps.head))
 
   // TODO change this to its own service and within F context
-  def process(e: TempEvent): TempCommand = {
+  private def process(e: SetTemp): TempCommand = {
     val max = 60.0
     // -1 == Off
     // 0 == 30
@@ -57,5 +59,18 @@ class StreamProcessor[F[_]](boilerService: com.tomliddle.heating.BoilerService[F
 
     TempCommand(waterTemp)
   }
+
+  /*def withTopic[F[_]](implicit F: Concurrent[F]): fs2.Stream[F, String] = {
+    val topic = fs2.concurrent.Topic[F, String]
+
+    val topicStream: fs2.Stream[F, Topic[F, String]] = fs2.Stream.eval(topic)
+
+    topicStream.flatMap { topic =>
+      val publisher: fs2.Stream[F, Pipe[F, String, Nothing]] =
+        fs2.Stream.emit("1").repeat.covary[F].map(t => topic.publish)
+      val subscriber: fs2.Stream[F, String] = topic.subscribe(10).take(4)
+      subscriber.concurrently(publisher)
+    }
+  }*/
 
 }

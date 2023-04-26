@@ -1,9 +1,10 @@
-package com.tomliddle.heating
+package com.tomliddle.heating.stubs
 
 import cats.*
 import cats.data.*
-import cats.implicits.*
 import cats.effect.{IO, Sync}
+import cats.implicits.*
+import com.tomliddle.heating.BoilerService
 import com.tomliddle.heating.adt.DataTypes
 import com.tomliddle.heating.adt.DataTypes.{Result, ResultError}
 

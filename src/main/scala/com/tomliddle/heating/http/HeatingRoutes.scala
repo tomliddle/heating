@@ -20,7 +20,10 @@ class HeatingRoutes(streamProcessor: StreamProcessor) {
 
   private val getTemperature: HttpRoutes[IO] =
     Http4sServerInterpreter[IO]().toRoutes(HeatingApi.getTemperatureEndpoint.serverLogic { _ =>
-      IO.pure(Result(2.2).asRight[ResultError])
+      for {
+        s <- streamProcessor.get
+        x = s.recentTemps.headOption.map(_.currentTemp).getOrElse(-1.0)
+      } yield Result(x).asRight[ResultError]
     })
 
   private def toResult(e: Either[Closed, Unit], value: Double): Either[ResultError, Result] = e match {

@@ -21,12 +21,13 @@ class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], to
 
   private val heatingSetFrequency: FiniteDuration = 10.seconds
 
-  def publish(t: TempCommand): IO[Either[Closed, Unit]] = {
+  def publish(t: TempCommand): IO[Either[Closed, Unit]] =
     topic.publish1(t)
-  }
+    
+  def get: IO[State] = IO.pure(State(Queue.apply(SetTemp(4.4, 4.4))))
 
   def runStream: fs2.Stream[IO, State] = {
-    val stream: fs2.Stream[IO, Event] = topic.subscribeUnbounded
+    val stream: fs2.Stream[IO, Event]            = topic.subscribeUnbounded
     val timerStream: fs2.Stream[Pure, Tick.type] = fs2.Stream(Tick)
 
     val result: fs2.Stream[IO, Event] = stream ++ timerStream
@@ -35,18 +36,17 @@ class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], to
     events
       .evalTap(f => logger.info(s"processing ${f}"))
       .evalScan(State()) {
-      case (state, Tick) =>
-        processCommand(state).flatMap(_ => IO.pure(state))
-      case (state, t: SetTemp) => IO.pure(state.withTemp(t))
-    }
+        case (state, Tick) =>
+          processCommand(state).flatMap(_ => IO.pure(state))
+        case (state, t: SetTemp) => IO.pure(state.withTemp(t))
+        case (state, _) => IO.pure(state)
+      }
   }
 
   private def processCommand(state: State): IO[Either[ResultError, Result]] = (for {
-    t <- EitherT.fromOption(state.recentTemps.headOption, ResultError("No recent temp"))
+    t   <- EitherT.fromOption(state.recentTemps.headOption, ResultError("No recent temp"))
     res <- EitherT.apply(boilerService.setTemp(process(t)))
   } yield res).value
-
-
 
   // TODO change this to its own service and within F context
   private def process(e: SetTemp): TempCommand = {

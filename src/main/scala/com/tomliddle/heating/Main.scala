@@ -27,14 +27,13 @@ object Main extends IOApp.Simple with Logging:
       topic <- fs2.concurrent.Topic[IO, Event]
       streamProcessor = new StreamProcessor(temperatureService, topic)
       httpApp = new HeatingRoutes(streamProcessor).heatingRoutes.orNotFound
-      stream = streamProcessor.runStream.compile.drain.background
+      _ <- streamProcessor.runStream.compile.drain.start
       server <-
         EmberServerBuilder.default[IO]
           .withHost(ipv4"0.0.0.0")
           .withPort(port"8080")
           .withHttpApp(httpApp)
           .build
-          .combineK(stream)
           .useForever
     } yield server
   }

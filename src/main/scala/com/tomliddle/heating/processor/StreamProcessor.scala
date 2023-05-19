@@ -1,7 +1,8 @@
 package com.tomliddle.heating.processor
 
+import cats.Monad
 import cats.data.EitherT
-import cats.effect.{Concurrent, IO, Resource, Sync, Temporal}
+import cats.effect.{Async, Concurrent, Resource, Sync, Temporal}
 import com.tomliddle.heating.adt.DataTypes.*
 
 import scala.util.Random
@@ -9,6 +10,8 @@ import cats.syntax.option.catsSyntaxOptionId
 import com.tomliddle.heating.BoilerService
 import com.tomliddle.heating.Main.Logging
 import fs2.{Pipe, Pure}
+import cats.implicits.toFlatMapOps
+import cats.implicits.toFunctorOps
 
 import java.time
 import java.time.Instant
@@ -17,21 +20,21 @@ import scala.concurrent.duration.*
 import fs2.concurrent.Topic
 import fs2.concurrent.Topic.Closed
 
-class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], topic: Topic[IO, Event]) extends Logging[IO] {
+class StreamProcessor[F[_]: Async](boilerService: com.tomliddle.heating.BoilerService[F], topic: Topic[F, Event]) extends Logging[F] {
 
   private val heatingSetFrequency: FiniteDuration = 10.seconds
 
-  def publish(t: SetTemp): IO[Either[Closed, Unit]] =
+  def publish(t: SetTemp): F[Either[Closed, Unit]] =
     topic.publish1(t)
     
-  def get: IO[State] = IO.pure(State(List(SetTemp(4.4, 4.4))))
+  def get: F[State] = Async[F].pure(State(List(SetTemp(4.4, 4.4))))
 
-  def runStream: fs2.Stream[IO, State] = {
-    val stream: fs2.Stream[IO, Event]            = topic.subscribeUnbounded
+  def runStream: fs2.Stream[F, State] = {
+    val stream: fs2.Stream[F, Event]            = topic.subscribeUnbounded
     val timerStream: fs2.Stream[Pure, Tick.type] = fs2.Stream(Tick)
 
-    val result: fs2.Stream[IO, Event] = stream ++ timerStream
-    val events: fs2.Stream[IO, Event] = result.mergeHaltL(fs2.Stream.awakeEvery[IO](heatingSetFrequency).map(_ => Tick))
+    val result: fs2.Stream[F, Event] = stream ++ timerStream
+    val events: fs2.Stream[F, Event] = result.mergeHaltL(fs2.Stream.awakeEvery[F](heatingSetFrequency).map(_ => Tick))
 
     events
       .evalTap(f => logger.info(s"processing $f"))
@@ -41,13 +44,13 @@ class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], to
             tmp <- processCommand(state)
             _ <- logger.info(s"state is $state tmp is $tmp")
           } yield state
-        case (state, t: SetTemp) => IO.pure(state.withTemp(t))
-        case (state, _) => IO.pure(state)
+        case (state, t: SetTemp) => Async[F].pure(state.withTemp(t))
+        case (state, _) => Async[F].pure(state)
       }
   }
 
-  private def processCommand(state: State): IO[Either[ResultError, TempCommand]] = (for {
-    t   <- EitherT.fromOption(state.recentTemps.headOption, ResultError("No recent temp"))
+  private def processCommand(state: State): F[Either[ResultError, TempCommand]] = (for {
+    t   <- EitherT.fromOption[F](state.recentTemps.headOption, ResultError("No recent temp"))
     res <- EitherT.apply(boilerService.setTemp(t))
   } yield res).value
 

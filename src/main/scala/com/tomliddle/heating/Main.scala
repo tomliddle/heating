@@ -26,8 +26,8 @@ object Main extends IOApp.Simple with Logging[IO]:
       _ <- logger.info("Start App")
       temperatureService = new BoilerServiceImpl[IO]
       topic <- fs2.concurrent.Topic[IO, Event]
-      streamProcessor = new StreamProcessor(temperatureService, topic)
-      httpApp = new HeatingRoutes(streamProcessor).heatingRoutes.orNotFound
+      streamProcessor = new StreamProcessor[IO](temperatureService, topic)
+      httpApp = new HeatingRoutes[IO](streamProcessor).heatingRoutes.orNotFound
       _ <- streamProcessor.runStream.compile.drain.start
       server <-
         EmberServerBuilder.default[IO]

@@ -11,15 +11,15 @@ import fs2.concurrent.Topic.Closed
 import cats.syntax.all.*
 import com.tomliddle.heating.processor.StreamProcessor
 
-class HeatingRoutes(streamProcessor: StreamProcessor) {
+class HeatingRoutes[F[_]: Async](streamProcessor: StreamProcessor[F]) {
 
-  private val setTemperature: HttpRoutes[IO] =
-    Http4sServerInterpreter[IO]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic { case (currTemp, setTemp) =>
+  private val setTemperature: HttpRoutes[F] =
+    Http4sServerInterpreter[F]().toRoutes(HeatingApi.setTemperatureEndpoint.serverLogic { case (currTemp, setTemp) =>
       streamProcessor.publish(SetTemp(currTemp, setTemp)).map(e => toResult(e, setTemp))
     })
 
-  private val getTemperature: HttpRoutes[IO] =
-    Http4sServerInterpreter[IO]().toRoutes(HeatingApi.getTemperatureEndpoint.serverLogic { _ =>
+  private val getTemperature: HttpRoutes[F] =
+    Http4sServerInterpreter[F]().toRoutes(HeatingApi.getTemperatureEndpoint.serverLogic { _ =>
       for {
         s <- streamProcessor.get
         x = s.recentTemps.headOption.map(_.setTemp).getOrElse(-1.0)
@@ -31,6 +31,6 @@ class HeatingRoutes(streamProcessor: StreamProcessor) {
     case Right(_) => Result(value).asRight
   }
 
-  val heatingRoutes: HttpRoutes[IO] =
+  val heatingRoutes: HttpRoutes[F] =
     setTemperature <+> getTemperature
 }

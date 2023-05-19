@@ -17,14 +17,14 @@ import scala.concurrent.duration.*
 import fs2.concurrent.Topic
 import fs2.concurrent.Topic.Closed
 
-class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], topic: Topic[IO, Event]) extends Logging {
+class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], topic: Topic[IO, Event]) extends Logging[IO] {
 
   private val heatingSetFrequency: FiniteDuration = 10.seconds
 
-  def publish(t: TempCommand): IO[Either[Closed, Unit]] =
+  def publish(t: SetTemp): IO[Either[Closed, Unit]] =
     topic.publish1(t)
     
-  def get: IO[State] = IO.pure(State(Queue.apply(SetTemp(4.4, 4.4))))
+  def get: IO[State] = IO.pure(State(List(SetTemp(4.4, 4.4))))
 
   def runStream: fs2.Stream[IO, State] = {
     val stream: fs2.Stream[IO, Event]            = topic.subscribeUnbounded
@@ -34,48 +34,21 @@ class StreamProcessor(boilerService: com.tomliddle.heating.BoilerService[IO], to
     val events: fs2.Stream[IO, Event] = result.mergeHaltL(fs2.Stream.awakeEvery[IO](heatingSetFrequency).map(_ => Tick))
 
     events
-      .evalTap(f => logger.info(s"processing ${f}"))
+      .evalTap(f => logger.info(s"processing $f"))
       .evalScan(State()) {
         case (state, Tick) =>
-          processCommand(state).flatMap(_ => IO.pure(state))
+          for {
+            tmp <- processCommand(state)
+            _ <- logger.info(s"state is $state tmp is $tmp")
+          } yield state
         case (state, t: SetTemp) => IO.pure(state.withTemp(t))
         case (state, _) => IO.pure(state)
       }
   }
 
-  private def processCommand(state: State): IO[Either[ResultError, Result]] = (for {
+  private def processCommand(state: State): IO[Either[ResultError, TempCommand]] = (for {
     t   <- EitherT.fromOption(state.recentTemps.headOption, ResultError("No recent temp"))
-    res <- EitherT.apply(boilerService.setTemp(process(t)))
+    res <- EitherT.apply(boilerService.setTemp(t))
   } yield res).value
-
-  // TODO change this to its own service and within F context
-  private def process(e: SetTemp): TempCommand = {
-    val max = 60.0
-    // -1 == Off
-    // 0 == 30
-    // 1 == 40
-    // 2 == 50
-    // 3 == 60
-    val waterTemp = e.increaseNeeded match {
-      case t if t < -1 => None
-      case t if t >= 3 => max.some
-      case t           => (30 + (t * 10)).some
-    }
-
-    TempCommand(waterTemp)
-  }
-
-  /*def withTopic[F[_]](implicit F: Concurrent[F]): fs2.Stream[F, String] = {
-    val topic = fs2.concurrent.Topic[F, String]
-
-    val topicStream: fs2.Stream[F, Topic[F, String]] = fs2.Stream.eval(topic)
-
-    topicStream.flatMap { topic =>
-      val publisher: fs2.Stream[F, Pipe[F, String, Nothing]] =
-        fs2.Stream.emit("1").repeat.covary[F].map(t => topic.publish)
-      val subscriber: fs2.Stream[F, String] = topic.subscribe(10).take(4)
-      subscriber.concurrently(publisher)
-    }
-  }*/
 
 }

@@ -16,7 +16,8 @@ import com.tomliddle.heating.processor.StreamProcessor
 import fs2.concurrent.Topic
 import org.http4s.ember.server.EmberServerBuilder
 
-object Main extends IOApp.Simple with Logging:
+
+object Main extends IOApp.Simple with Logging[IO]:
   val run = runApp
 
 
@@ -39,8 +40,8 @@ object Main extends IOApp.Simple with Logging:
   }
 
 
-  trait Logging {
-    given logger: Logger[IO] = Slf4jLogger.getLogger[IO]
+  trait Logging[F[_]: Sync] {
+    given logger: Logger[F] = Slf4jLogger.getLogger[F]
 
 
   }

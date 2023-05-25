@@ -20,8 +20,6 @@ object ServiceDependencies {
     "org.typelevel" %% "cats-effect" % CatsEffect,
     "co.fs2" %% "fs2-core" % Fs2Version,
     "co.fs2" %% "fs2-io" % Fs2Version,
-    "org.scalameta" %% "munit" % MunitVersion % Test,
-    "org.typelevel" %% "munit-cats-effect-3" % MunitCatsEffectVersion % Test,
     "ch.qos.logback" % "logback-classic" % LogbackVersion,
     //"org.typelevel" %% "log4cats-core"    % "2.5.0",
     "org.typelevel" %% "log4cats-slf4j"   % "2.5.0",
@@ -29,6 +27,9 @@ object ServiceDependencies {
     "org.http4s" %% "http4s-ember-client" % "0.23.18",
     "com.softwaremill.sttp.tapir" %% "tapir-json-circe" % "1.2.9",
     //"com.github.fd4s" %% "fs2-kafka" % Fs2Version
+    "org.scalameta" %% "munit" % MunitVersion % Test,
+    "org.typelevel" %% "munit-cats-effect-3" % MunitCatsEffectVersion % Test,
+    "com.disneystreaming" %% "weaver-cats" % "0.8.3" % Test,
   )
 
   private val tapir =

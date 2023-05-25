@@ -10,16 +10,22 @@ import com.tomliddle.heating.Main.Logging
 trait BoilerService[F[_]] {
 
   def setTemp(tempCommand: SetTemp): F[Either[ResultError, TempCommand]]
+
+  def getTemp: F[Option[SetTemp]]
 }
 
 
-class BoilerServiceImpl[F[_]: Async: Sync] extends BoilerService[F] with Logging[F] {
+case class BoilerServiceImpl[F[_]: Async](persistance: Persistance[F, String, SetTemp]) extends BoilerService[F] with Logging[F] {
   override def setTemp(temp: SetTemp): F[Either[ResultError, TempCommand]] = (for {
-    _ <- EitherT.pure(logger.info(s"Water temp has been set to"))
-    res <- EitherT.apply(process(temp))
-  } yield res).value
+      res <- EitherT.apply(process(temp))
+      _ <- EitherT.right(persistance.save("CURRENT", temp))
+      _ <- EitherT.right(logger.info(s"Water temp has been set to ${temp.setTemp} with an increase required of ${temp.increaseNeeded}").map(_.asRight[ResultError]))
+    } yield res).value
 
-  // TODO change this to its own service and within F context
+  override def getTemp: F[Option[SetTemp]] = {
+    persistance.get("CURRENT")
+  }
+
   private def process(e: SetTemp): F[Either[ResultError, TempCommand]] = {
     val max = 60.0
     // 0 <= Off
@@ -32,6 +38,8 @@ class BoilerServiceImpl[F[_]: Async: Sync] extends BoilerService[F] with Logging
       case t => (30 + (t * 10)).some
     }
 
-    Async[F].pure(TempCommand(waterTemp).asRight[ResultError])
+    Async[F].pure(TempCommand(waterTemp).asRight)
   }
+
+
 }

@@ -7,7 +7,7 @@ import com.tomliddle.heating.adt.DataTypes.*
 
 import scala.util.Random
 import cats.syntax.option.catsSyntaxOptionId
-import com.tomliddle.heating.BoilerService
+import com.tomliddle.heating.{BoilerService, Persistance}
 import com.tomliddle.heating.Main.Logging
 import fs2.{Pipe, Pure}
 import cats.implicits.toFlatMapOps
@@ -20,14 +20,13 @@ import scala.concurrent.duration.*
 import fs2.concurrent.Topic
 import fs2.concurrent.Topic.Closed
 
-class StreamProcessor[F[_]: Async](boilerService: com.tomliddle.heating.BoilerService[F], topic: Topic[F, Event]) extends Logging[F] {
+class StreamProcessor[F[_]: Async](boilerService: BoilerService[F], topic: Topic[F, Event]) extends Logging[F] {
 
-  private val heatingSetFrequency: FiniteDuration = 10.seconds
+  private val heatingSetFrequency: FiniteDuration = 5.seconds
 
   def publish(t: SetTemp): F[Either[Closed, Unit]] =
     topic.publish1(t)
-    
-  def get: F[State] = Async[F].pure(State(List(SetTemp(4.4, 4.4))))
+
 
   def runStream: fs2.Stream[F, State] = {
     val stream: fs2.Stream[F, Event]            = topic.subscribeUnbounded

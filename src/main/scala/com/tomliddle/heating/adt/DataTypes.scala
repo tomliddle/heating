@@ -23,17 +23,4 @@ object DataTypes {
 
   final case class TempCommand(waterTemperature: Option[Double]) extends Event
 
-
-  
-  
- // def apply[F[_]](implicit ev: DataTypes[F]): DataTypes[F] = ev
-  
-
-  /*def impl[F[_]: Concurrent](C: Client[F]): DataTypes[F] = new DataTypes[F]:
-    val dsl = new Http4sClientDsl[F]{}
-    import dsl.*
-    def get: F[DataTypes.HeatDemand] =
-      C.expect[HeatDemand](GET(uri"https://icanhazdadjoke.com/"))
-        .adaptError{ case t => JokeError(t)} // Prevent Client Json Decoding Failure Leaking
-  */
 }

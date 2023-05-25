@@ -7,5 +7,6 @@ lazy val root = (project in file("."))
     version      := "0.0.1-SNAPSHOT",
     scalaVersion := "3.2.2",
     testFrameworks += new TestFramework("munit.Framework"),
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     libraryDependencies ++= ServiceDependencies()
   )

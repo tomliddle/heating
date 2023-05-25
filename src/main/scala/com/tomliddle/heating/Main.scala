@@ -10,7 +10,7 @@ import cats.effect.*
 import cats.implicits.*
 import com.tomliddle.heating.Main.Logging
 import com.tomliddle.heating.adt.DataTypes
-import com.tomliddle.heating.adt.DataTypes.Event
+import com.tomliddle.heating.adt.DataTypes.{Event, SetTemp}
 import com.tomliddle.heating.http.HeatingRoutes
 import com.tomliddle.heating.processor.StreamProcessor
 import fs2.concurrent.Topic
@@ -24,10 +24,12 @@ object Main extends IOApp.Simple with Logging[IO]:
   def runApp: IO[Nothing] = {
     for {
       _ <- logger.info("Start App")
-      temperatureService = new BoilerServiceImpl[IO]
+      ref <- Ref[IO].of(Store[String, SetTemp](Map.empty))
+      persistance = InMemoryPersistance[IO, String, SetTemp](ref)
+      boilerService = BoilerServiceImpl[IO](persistance)
       topic <- fs2.concurrent.Topic[IO, Event]
-      streamProcessor = new StreamProcessor[IO](temperatureService, topic)
-      httpApp = new HeatingRoutes[IO](streamProcessor).heatingRoutes.orNotFound
+      streamProcessor = new StreamProcessor[IO](boilerService, topic)
+      httpApp = new HeatingRoutes[IO](streamProcessor, boilerService).heatingRoutes.orNotFound
       _ <- streamProcessor.runStream.compile.drain.start
       server <-
         EmberServerBuilder.default[IO]

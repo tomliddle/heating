@@ -12,5 +12,4 @@ object Codecs {
   implicit val resultCodec: Codec[Result] = deriveCodec
 
   implicit val resultError: Codec[ResultError] = deriveCodec
-  //implicit val resultEncoder: Encoder[Result] = deriveEncoder
 }

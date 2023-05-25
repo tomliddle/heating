@@ -228,7 +228,7 @@
         "platform": {
             "name": "jvm",
             "config": {
-                "home": "/opt/homebrew/Cellar/openjdk@11/11.0.18/libexec/openjdk.jdk/Contents/Home",
+                "home": "/opt/homebrew/Cellar/openjdk@11/11.0.19/libexec/openjdk.jdk/Contents/Home",
                 "options": [
                     "-Duser.dir=/Users/tle17/projects/sandbox/heating/project"
                 ]
